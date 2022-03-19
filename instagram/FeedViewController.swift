@@ -15,12 +15,25 @@ class FeedViewController: UIViewController, UITableViewDelegate, UITableViewData
     
     var posts = [PFObject]()
     
+    var refreshControl: UIRefreshControl!
+    
+    var numberOfPosts: Int!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        numberOfPosts = 20
 
         tableView.delegate = self
         tableView.dataSource = self
         // Do any additional setup after loading the view.
+        
+        refreshControl = UIRefreshControl()
+        refreshControl.addTarget(self, action: #selector(onRefresh), for: .valueChanged)
+        tableView.refreshControl = refreshControl
+        self.tableView.rowHeight = UITableView.automaticDimension
+        self.tableView.estimatedRowHeight = 150
+        
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -34,8 +47,32 @@ class FeedViewController: UIViewController, UITableViewDelegate, UITableViewData
             if posts != nil{
                 self.posts = posts!
                 self.tableView.reloadData()
+                
+                self.refreshControl.endRefreshing()
             }
             
+        }
+        
+        
+    }
+    
+    @objc func loadMorePosts(){
+        let query = PFQuery(className: "Posts")
+        query.includeKey("author")
+        query.limit = query.limit + 20
+        
+        query.findObjectsInBackground{ (posts, error) in
+            if posts != nil{
+                self.posts = posts!
+                self.tableView.reloadData()
+            }
+            
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        if indexPath.row + 1 == posts.count{
+            loadMorePosts()
         }
     }
     
@@ -62,6 +99,20 @@ class FeedViewController: UIViewController, UITableViewDelegate, UITableViewData
         
         return cell
         
+    }
+    
+    
+    
+    @objc func onRefresh() {
+        run(after: 2) {
+               self.refreshControl.endRefreshing()
+            }
+    }
+    
+    // Implement the delay method
+    func run(after wait: TimeInterval, closure: @escaping () -> Void) {
+        let queue = DispatchQueue.main
+        queue.asyncAfter(deadline: DispatchTime.now() + wait, execute: closure)
     }
 
     /*
