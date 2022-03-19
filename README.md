@@ -24,3 +24,7 @@ The following **bonus** features are implemented:
 Here's a walkthrough of implemented user stories:
 
 <img src='http://g.recordit.co/fkpgCvO4Op.gif' title='Video Walkthrough' width='' alt='Video Walkthrough' />
+
+Here's a walkthrough of the bonus features, and the login page looks like the real instagram login page: 
+
+<img src='http://g.recordit.co/PC7RNRZKhh.gif' title='Video Walkthrough' width='' alt='Video Walkthrough' />
